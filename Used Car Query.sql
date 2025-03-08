@@ -1,0 +1,96 @@
+--Her Markadan kaç tane araba var? Büyükten küçüğe sırala
+SELECT BRAND,COUNT(*) AS COUNT_
+FROM WEBOFFERS
+GROUP BY BRAND
+ORDER BY COUNT_ DESC
+
+
+
+--Her Markadan kaç tane araba var? Yüzdesel olarak karşılığı
+SELECT BRAND,COUNT(*) AS COUNT_,
+ROUND(CONVERT(FLOAT,COUNT(*))/(SELECT COUNT(*) FROM WEBOFFERS)*100,2)
+AS PERCENT_
+FROM WEBOFFERS
+GROUP BY BRAND
+ORDER BY COUNT_ DESC
+
+
+
+--Şehir başına ilan sayısı
+SELECT CITY,
+(SELECT COUNT(*) FROM WEBOFFERS WHERE CITYID=CITY.ID) AS COUNT_
+FROM CITY
+ORDER BY COUNT_ DESC
+
+
+
+--Ankaradaki Mercedes sayıları
+SELECT BRAND,COUNT(*) AS COUNT_
+FROM WEBOFFERS W
+INNER JOIN CITY C ON C.ID=W.CITYID
+WHERE W.BRAND='Mercedes' AND C.ID=6
+GROUP BY BRAND
+ORDER BY COUNT_ DESC
+
+
+
+--Markaların modellerinden kaç tane var? Büyükten küçüğe sıralı
+SELECT BRAND,MODEL,COUNT(BRAND) AS COUNT_
+FROM WEBOFFERS
+GROUP BY BRAND,MODEL
+ORDER BY COUNT_ DESC
+
+
+
+--Hangi şehirde,hangi arabanın hangi modelinden kaç tane var? 
+--Bunların vites tipleri ve üretim yılları
+--Sayı olarak büyükten küçüğe sıralı
+SELECT C.CITY,BRAND,MODEL,COUNT(BRAND) AS COUNT_,
+YEAR_,SHIFTTYPE
+FROM WEBOFFERS W
+INNER JOIN CITY C ON C.ID=W.CITYID
+WHERE SHIFTTYPE IN('Yarı Otomatik Vites','Otomatik Vites')
+AND FROMWHO='Sahibinden'
+GROUP BY BRAND,MODEL,CITY,YEAR_,SHIFTTYPE
+ORDER BY COUNT_ DESC
+
+
+
+--İstanbulda bulunan Toyota Corollalar arası filtreleme:
+--Sahibi tarafından satılan, 2013-2020 arası model,
+--otomatik,dizel 
+--Kilometre ve fiyata göre sıralı
+SELECT U.NAMESURNAME, C.CITY, T.TOWN, D.DISTRICT,
+W.TITLE, W.BRAND, W.MODEL, W.PRICE, W.YEAR_,
+W.KM, W.FUEL, W.SHIFTTYPE, W.COLOR, W.VARYANT
+
+FROM WEBOFFERS W
+INNER JOIN CITY C ON C.ID=W.CITYID
+INNER JOIN TOWN T ON T.ID=W.TOWNID
+INNER JOIN DISTRICT D ON D.ID=W.DISTRICTID
+INNER JOIN USER_ U ON U.ID=W.USERID
+WHERE C.ID=34
+AND W.SHIFTTYPE IN('Yarı Otomatik Vites','Otomatik Vites')
+AND W.BRAND='Toyota' 
+AND W.MODEL='Corolla'
+AND W.FUEL='Dizel'
+AND W.FROMWHO='Sahibinden'
+AND W.YEAR_ BETWEEN 2013 AND 2020
+ORDER BY KM,PRICE
+
+
+
+--Benzin veya Benzin/LPGli ve Rengi Siyah,Beyaz veya Gri olan BWM marka arabalar
+SELECT U.NAMESURNAME, C.CITY, T.TOWN, D.DISTRICT,
+W.TITLE, W.BRAND, W.MODEL, W.PRICE, W.YEAR_,
+W.KM, W.FUEL, W.SHIFTTYPE, W.COLOR, W.VARYANT
+
+FROM WEBOFFERS W
+INNER JOIN CITY C ON C.ID=W.CITYID
+INNER JOIN TOWN T ON T.ID=W.TOWNID
+INNER JOIN DISTRICT D ON D.ID=W.DISTRICTID
+INNER JOIN USER_ U ON U.ID=W.USERID
+WHERE W.BRAND='BMW'
+AND C.ID IN ('6','34','35')
+AND COLOR IN ('Siyah','Beyaz','Gri')
+AND FUEL IN ('Benzin','Benzin/LPG') 
