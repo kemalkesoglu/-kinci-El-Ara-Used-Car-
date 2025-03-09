@@ -93,4 +93,4 @@ INNER JOIN USER_ U ON U.ID=W.USERID
 WHERE W.BRAND='BMW'
 AND C.ID IN ('6','34','35')
 AND COLOR IN ('Siyah','Beyaz','Gri')
-AND FUEL IN ('Benzin','Benzin/LPG')  
+AND FUEL IN ('Benzin','Benzin/LPG')
